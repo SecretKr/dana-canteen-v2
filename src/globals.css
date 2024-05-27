@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+}
+
+body {
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient( to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+
+table {
+    background-color: #fff;
+}
+
+th {
+    height: 3rem;
+    border-collapse: collapse;
+    border-width: 0.1rem;
+    border-color: #ccc;
+    text-align: center;
+}
+
+td {
+    cursor: pointer;
+    font-size: 1.4rem;
+    height: 3rem;
+    border-collapse: collapse;
+    border-width: 0.1rem;
+    border-color: #ccc;
+    text-align: center;
+    transition: all 1s;
+}
+
+td:hover {
+    background-color:#ddd;
+}
+
+tr:nth-child(odd) {
+    background-color: #eee;
+}
+
+.select_button {
+    font-size: 2rem;
+    border-radius: 0.4rem;
+    height: 8rem;
+    width: 8rem;
+    margin: 1rem;
+}
