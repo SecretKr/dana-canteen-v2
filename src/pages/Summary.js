@@ -109,23 +109,23 @@ export default function Summary() {
       </div>
       <div className="text-gray-600 bg-white rounded inline-block p-2 h-10 w-48 text-center">
         <CsvDownloader
-          filename={"summary " + selectedCoupon}
+          filename={"Summary " + startDate.toISOString().split("T")[0] + " - " + endDate.toISOString().split("T")[0]}
           extension=".csv"
           datas={csvData}
           text="Download CSV"
         />
       </div>
       <div className="flex mt-4">
-        <Table data={tbData}/>
+        <Table data={tbData} selectedCoupon={selectedCoupon}/>
       </div>
     </div>
   );
 }
 
-const Table = ({data}) => {
+const Table = ({data, selectedCoupon}) => {
   const navigate = useNavigate()
   const pushToHistory = ({date, shift}) => {
-    navigate("/logs?date=" + date + ",shift=" + shift)
+    navigate("/logs?date=" + date + "&type=" + selectedCoupon)
   }
 
   return (
