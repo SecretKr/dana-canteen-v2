@@ -1,5 +1,5 @@
 "use client"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react";
 import CsvDownloader from 'react-csv-downloader';
 import { supabase } from "../supabaseClient"
@@ -10,9 +10,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from "@mui/x-date-pickers";
 
 export default function Summary() {
-  const [id, setId] = useState("")
-  const [refs, setRefs] = useState([])
-  const [list, setList] = useState([])
   const [startDate, setStartDate] = useState(dayjs())
   const [endDate, setEndDate] = useState(dayjs())
   const [selectedCoupon, setSelectedCoupon] = useState("food")
@@ -126,7 +123,11 @@ export default function Summary() {
 }
 
 const Table = ({data}) => {
-  const pushToHistory = () => {}
+  const navigate = useNavigate()
+  const pushToHistory = ({date, shift}) => {
+    navigate("/logs?date=" + date + ",shift=" + shift)
+  }
+
   return (
     <table className="w-full table-fixed">
       <tbody>
@@ -144,7 +145,7 @@ const Table = ({data}) => {
           <td className="text-xs">Shift 1<br></br>10 - 14</td>
           {data.map((item => {
             return(
-              <td key={"1"+item.date} onClick={() => pushToHistory({path:item.fullDate+"1"})}>
+              <td key={"1"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "1"})}>
                 {item.s1}
               </td>
             )
@@ -154,7 +155,7 @@ const Table = ({data}) => {
           <td className="text-xs">Shift 2<br></br>15 - 20</td>
           {data.map((item => {
             return(
-              <td key={"2"+item.date} onClick={() => pushToHistory({path:item.fullDate+"2"})}>
+              <td key={"2"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "2"})}>
                 {item.s2}
               </td>
             )
@@ -164,7 +165,7 @@ const Table = ({data}) => {
           <td className="text-xs">Shift 3<br></br>22 - 1</td>
           {data.map((item => {
             return(
-              <td key={"3"+item.date} onClick={() => pushToHistory({path:item.fullDate+"3"})}>
+              <td key={"3"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "3"})}>
                 {item.s3}
               </td>
             )
@@ -174,7 +175,7 @@ const Table = ({data}) => {
           <td className="text-xs">Shift 4<br></br>3 - 8</td>
           {data.map((item => {
             return(
-              <td key={"4"+item.date} onClick={() => pushToHistory({path:item.fullDate+"4"})}>
+              <td key={"4"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "4"})}>
                 {item.s4}
               </td>
             )
@@ -184,7 +185,7 @@ const Table = ({data}) => {
           <td className="text-xs">Other</td>
           {data.map((item => {
             return(
-              <td key={"0"+item.date} onClick={() => pushToHistory({path:item.fullDate+"0"})}>
+              <td key={"0"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "0"})}>
                 {item.s0}
               </td>
             )

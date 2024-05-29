@@ -2,7 +2,8 @@ import { BrowserRouter, Route, Routes, Link } from "react-router-dom"
 
 // Pages
 import Scan from "./pages/Scan"
-import Summary from "./pages/Summary";
+import Summary from "./pages/Summary"
+import Logs from "./pages/Logs";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Scan />} />
         <Route path="/summary" element={<Summary />} />
+        <Route path="/logs" element={<Logs />} />
       </Routes>
     </BrowserRouter>
   );
