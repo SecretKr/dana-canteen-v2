@@ -1,4 +1,5 @@
 "use client"
+import { Link } from "react-router-dom"
 import { useEffect, useState } from "react";
 import CsvDownloader from 'react-csv-downloader';
 import { supabase } from "../supabaseClient"
@@ -84,11 +85,11 @@ export default function Summary() {
       <div className="gap-4 flex flex-row content-start items-center mt-6">
         {/* <button onClick={test}>test</button> */}
         <p className="absolute right-2 top-2">DB-IP: {}</p>
-        <button
+        <Link to="/"><button
           className="text-gray-600 bg-white rounded inline-block p-2 h-14 w-16 text-center"
         >
           Back
-        </button>
+        </button></Link>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DemoContainer components={['DatePicker']}>
             <DatePicker label="Start Date" value={startDate} onChange={(date) => setStartDate(date)}/>

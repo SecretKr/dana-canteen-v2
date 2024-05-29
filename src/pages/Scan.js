@@ -37,14 +37,9 @@ function Scan() {
     inputRef.current.focus()
   }
 
-  // const router = useRouter();
-  const pushToSummary = () => {
-  //   router.push("/summary");
-  };
-
   return (
     <div className="relative flex min-h-screen" onClick={() => inputRef.current.focus()}>
-      <Link to="/summary"><button className="absolute top-4 left-4 bg-white rounded-md text-gray-600 p-2 w-24 h-10" onClick={pushToSummary}>Summary</button></Link>
+      <Link to="/summary"><button className="absolute top-4 left-4 bg-white rounded-md text-gray-600 p-2 w-24 h-10">Summary</button></Link>
       <p className="absolute right-2 top-2">DB: {process.env.REACT_APP_SUPABASE_URL}</p>
       <div className="w-full content-center items-center justify-between flex-col">
         <div className="w-full content-center text-center">
