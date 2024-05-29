@@ -7,11 +7,40 @@ supabase stop
 # SQL Functions
 
 ```
-CREATE OR REPLACE function append_data(date DATE, new_data JSONB) returns VOID as $$
-  update data
-  set dana = dana || new_data::jsonb
-  where data.date = date
-  returning *;
+CREATE OR REPLACE function append_food(date DATE, new_data JSONB) returns VOID as $$
+  update food
+  set data = data || new_data::jsonb
+  where food.date = date;
+
+  insert into food (date, data)
+  select date, array[new_data]::jsonb[]
+  where not exists (
+    select 1 from food where date = date
+  );
+$$ language sql;
+
+CREATE OR REPLACE function append_milk(date DATE, new_data JSONB) returns VOID as $$
+  update milk
+  set data = data || new_data::jsonb
+  where milk.date = date;
+
+  insert into milk (date, data)
+  select date, array[new_data]::jsonb[]
+  where not exists (
+    select 1 from milk where date = date
+  );
+$$ language sql;
+
+CREATE OR REPLACE function append_other(date DATE, new_data JSONB) returns VOID as $$
+  update other
+  set data = data || new_data::jsonb
+  where other.date = date;
+
+  insert into other (date, data)
+  select date, array[new_data]::jsonb[]
+  where not exists (
+    select 1 from other where date = date
+  );
 $$ language sql;
 ```
 

@@ -1,143 +1,131 @@
 "use client"
 import { useEffect, useState } from "react";
 import CsvDownloader from 'react-csv-downloader';
+import { supabase } from "../supabaseClient"
+import dayjs from "dayjs";
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from "@mui/x-date-pickers";
 
-export default function Home() {
+export default function Summary() {
   const [id, setId] = useState("")
   const [refs, setRefs] = useState([])
   const [list, setList] = useState([])
-  const [selected, setSelected] = useState()
-  const [data, setData] = useState([])
+  const [startDate, setStartDate] = useState(dayjs())
+  const [endDate, setEndDate] = useState(dayjs())
+  const [selectedCoupon, setSelectedCoupon] = useState("food")
+  const [tbData, setTbData] = useState([])
   const [csvData, setCsvData] = useState([])
-  const [dbIp, setDbIp] = useState('127.0.0.1')
-
-
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "date"), (querySnapshot) => {
-      const l = new Set();
-      querySnapshot.forEach((doc) => {
-        const dt = doc.id.split("_")
-        let str;
-        if(Number(dt[2]) <= 15) str = dt[0]+"_"+dt[1]+"_1"
-        else str = dt[0]+"_"+dt[1]+"_16"
-        l.add(str)
-      })
-      const lst = Array.from(l)
-      setList(lst)
-    })
-  }, [db])
-
-  const getData = async ({n,i}) => {
-    const t = []
-    try{
-      const sp = selected.split("_")
-      const querySnapshot = await getDocs(collection(db, "date", sp[0]+"_"+sp[1]+"_"+String(i), n))
-      querySnapshot.forEach((doc) => {
-        t.push(doc.data())
-      })
-    }
-    catch {}
-    return t
-  }
 
   const getTable = async () => {
-    if(selected != undefined){
+    if(startDate && endDate && (new Date(endDate) - new Date(startDate) >= 0)){
+      let iDate = new Date(startDate)
+      //console.log(iDate.toISOString().split("T")[0])
+
+      const { data, error } = await supabase
+        .from(selectedCoupon)
+        .select("*")
+        .gte('date', startDate)
+        .lte('date', endDate)
+      const sorted = data.sort((a,b) => new Date(a.date) - new Date(b.date))
+      console.log(sorted)
+
       const l = []
       const csvL = [["Date"],["Shift-1 10.00-14.00"],["Shift-2 15.00-20.00"],["Shift-3 22.00-1.00"],["Shift-4 3.00-8.00"],["Other"]]
-      const sp = selected.split("_")
-      for(let i = 1;i < 16;i++){
-        const ts0 = await getData({n:"0", i:(i + Number(sp[2]) - 1)})
-        const ts1 = await getData({n:"1", i:(i + Number(sp[2]) - 1)})
-        const ts2 = await getData({n:"2", i:(i + Number(sp[2]) - 1)})
-        const ts3 = await getData({n:"3", i:(i + Number(sp[2]) - 1)})
-        const ts4 = await getData({n:"4", i:(i + Number(sp[2]) - 1)})
-        l.push({date: String(i + Number(sp[2]) - 1), s0:ts0, s1: ts1, s2: ts2, s3: ts3, s4:ts4, fullDate: sp[0]+"_"+sp[1]+"_"+String(i + Number(sp[2]) - 1)+","})
-        csvL[0].push(String(i + Number(sp[2]) - 1))
-        csvL[1].push(ts1.length)
-        csvL[2].push(ts2.length)
-        csvL[3].push(ts3.length)
-        csvL[4].push(ts4.length)
-        csvL[5].push(ts0.length)
+      for(let i = 0;i < sorted.length;i++){
+        let ts = [0,0,0,0,0]
+        for(let j = 0;j < sorted[i].data.length;j++){
+          const hours = new Date(Number(sorted[i].data[j].timestamp)).getHours()
+          if(hours >= 10 && hours < 14) ts[1]++;
+          else if(hours >= 15 && hours < 20) ts[2]++;
+          else if(hours >= 22 || hours < 1) ts[3]++;
+          else if(hours >= 3 && hours < 8) ts[4]++;
+          else ts[0]++
+        }
+        const sp = sorted[i].date.split("-")
+        while(sorted[i].date != iDate.toISOString().split("T")[0]){
+          const idsp = iDate.toISOString().split("T")[0].split("-")
+          l.push({date: idsp[1]+"-"+idsp[2], s0: 0, s1: 0, s2: 0, s3: 0, s4:0, fullDate: iDate.toISOString().split("T")[0]})
+          iDate.setDate(iDate.getDate() + 1)
+        }
+        l.push({date: sp[1]+"-"+sp[2], s0:ts[0], s1: ts[1], s2: ts[2], s3: ts[3], s4:ts[4], fullDate: sp[0]+"-"+sp[1]+"-"+sp[2]})
+        csvL[0].push(sp[1]+"-"+sp[2])
+        csvL[1].push(ts[1])
+        csvL[2].push(ts[2])
+        csvL[3].push(ts[3])
+        csvL[4].push(ts[4])
+        csvL[5].push(ts[0])
+        iDate.setDate(iDate.getDate() + 1)
       }
-      setData(l)
+      for(let d = iDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+        const idsp = d.toISOString().split("T")[0].split("-")
+        l.push({date: idsp[1]+"-"+idsp[2], s0: 0, s1: 0, s2: 0, s3: 0, s4:0, fullDate: d.toISOString().split("T")[0]})
+      }
+      setTbData(l)
       setCsvData(csvL)
     }
   }
 
-  useEffect(() => {
-    if(selected != undefined){
-      console.log(selected)
-      getTable()
-    }
-  }, [db, selected])
-
-  useEffect(() => {
-    const today = new Date();
-    let str;
-    if(today.getDate() <= 16) str = today.getFullYear()+"_"+(today.getMonth()+1)+"_1"
-    else str = today.getFullYear()+"_"+(today.getMonth()+1)+"_16"
-    setSelected(str)
-  }, [])
-
   const handleChange = (e) => { 
-    setSelected(e.target.value)
+    setSelectedCoupon(e.target.value)
   }
 
   const test = async() => {
-    const t = []
-    const querySnapshot = await getDocs(collection(db, "date", "2024_5_20", "2"))
-    querySnapshot.forEach((doc) => {
-      t.push(doc.data())
-      console.log(doc.data())
-    })
-  }
-
-  const router = useRouter();
-  const goBack = () => {
-    router.push("/")
+    const { data, error } = await supabase
+      .from('food')
+      .select("*")
+      .eq('date', '2024-05-29')
+    console.log(data)
   }
 
   return (
-    <div className="relative min-h-screen px-[5%] gap-24">
-      {/* <button onClick={test}>test</button> */}
-      <p className="absolute right-2 top-2">DB-IP: {dbIp}</p>
-      <button
-        className="text-gray-600 bg-white rounded inline-block p-2 h-10 w-16 mr-4 my-20 text-center"
-        onClick={goBack}
-      >
-        Back
-      </button>
-      <select className="text-gray-600 bg-white p-2 h-10 w-32 rounded-md mr-4 text-center" value={selected} onChange={handleChange}>
-        {list.map(item => (
-          <option value={item} key={item}>{item}</option>
-        ))}
-      </select>
-      <button
-        className="text-gray-600 bg-white rounded inline-block p-2 h-10 w-20 mr-4 text-center"
-        onClick={getTable}
-      >
-        Refresh
-      </button>
+    <div className="relative min-h-screen px-[5%] h-10">
+      <div className="gap-4 flex flex-row content-start items-center mt-6">
+        {/* <button onClick={test}>test</button> */}
+        <p className="absolute right-2 top-2">DB-IP: {}</p>
+        <button
+          className="text-gray-600 bg-white rounded inline-block p-2 h-14 w-16 text-center"
+        >
+          Back
+        </button>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DemoContainer components={['DatePicker']}>
+            <DatePicker label="Start Date" value={startDate} onChange={(date) => setStartDate(date)}/>
+          </DemoContainer>
+          <DemoContainer components={['DatePicker']}>
+            <DatePicker label="End Date" value={endDate} onChange={(date) => setEndDate(date)}/>
+          </DemoContainer>
+        </LocalizationProvider>
+        <select className="text-gray-600 bg-white p-2 h-14 w-20 rounded-md text-center" value={selectedCoupon} onChange={handleChange}>
+          <option value="food">Food</option>
+          <option value="milk">Milk</option>
+          <option value="other">Other</option>
+        </select>
+        <button
+          className="text-gray-600 bg-white rounded inline-block p-2 h-14 w-20 text-center"
+          onClick={getTable}
+        >
+          Search
+        </button>
+      </div>
       <div className="text-gray-600 bg-white rounded inline-block p-2 h-10 w-48 text-center">
-      <CsvDownloader
-        filename={"summary " + selected}
-        extension=".csv"
-        datas={csvData}
-        text="Download CSV"
-      /></div>
-      <div className="flex">
-        <Table data={data}/>
+        <CsvDownloader
+          filename={"summary " + selectedCoupon}
+          extension=".csv"
+          datas={csvData}
+          text="Download CSV"
+        />
+      </div>
+      <div className="flex mt-4">
+        <Table data={tbData}/>
       </div>
     </div>
   );
 }
 
 const Table = ({data}) => {
-  const router = useRouter()
-  const pushToHistory = ({path}) => {
-    router.push("/summary/history?date=" + path)
-  }
-
+  const pushToHistory = () => {}
   return (
     <table className="w-full table-fixed">
       <tbody>
@@ -156,7 +144,7 @@ const Table = ({data}) => {
           {data.map((item => {
             return(
               <td key={"1"+item.date} onClick={() => pushToHistory({path:item.fullDate+"1"})}>
-                {item.s1.length}
+                {item.s1}
               </td>
             )
           }))}
@@ -166,7 +154,7 @@ const Table = ({data}) => {
           {data.map((item => {
             return(
               <td key={"2"+item.date} onClick={() => pushToHistory({path:item.fullDate+"2"})}>
-                {item.s2.length}
+                {item.s2}
               </td>
             )
           }))}
@@ -176,7 +164,7 @@ const Table = ({data}) => {
           {data.map((item => {
             return(
               <td key={"3"+item.date} onClick={() => pushToHistory({path:item.fullDate+"3"})}>
-                {item.s3.length}
+                {item.s3}
               </td>
             )
           }))}
@@ -186,7 +174,7 @@ const Table = ({data}) => {
           {data.map((item => {
             return(
               <td key={"4"+item.date} onClick={() => pushToHistory({path:item.fullDate+"4"})}>
-                {item.s4.length}
+                {item.s4}
               </td>
             )
           }))}
@@ -196,7 +184,7 @@ const Table = ({data}) => {
           {data.map((item => {
             return(
               <td key={"0"+item.date} onClick={() => pushToHistory({path:item.fullDate+"0"})}>
-                {item.s0.length}
+                {item.s0}
               </td>
             )
           }))}

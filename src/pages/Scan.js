@@ -6,16 +6,18 @@ import { supabase } from "../supabaseClient"
 function Scan() {
   const inputRef = useRef(null);
   const [id, setId] = useState("")
-  const [dbIp, setDbIp] = useState('127.0.0.1')
   const [confirmation, setConfirmation] = useState("")
   const [selectedCoupon, setSelectedCoupon] = useState("food")
 
   const submit = async() => {
     if(id != ""){
-        console.log(id)
+        console.log(selectedCoupon, id)
+        setId("")
         const today = new Date()
+        const hours = today.getHours()
+        if(hours < 8) today.setDate(today.getDate() - 1)
         const timestamp = String(today.getTime())
-        const { data, error } = await supabase.rpc('append_data', {
+        const { data, error } = await supabase.rpc('append_' + selectedCoupon, {
             date: today,
             new_data: {
                 timestamp: timestamp,
@@ -43,7 +45,7 @@ function Scan() {
   return (
     <div className="relative flex min-h-screen" onClick={() => inputRef.current.focus()}>
       <Link to="/summary"><button className="absolute top-4 left-4 bg-white rounded-md text-gray-600 p-2 w-24 h-10" onClick={pushToSummary}>Summary</button></Link>
-      <p className="absolute right-2 top-2">DB-IP: {dbIp}</p>
+      <p className="absolute right-2 top-2">DB: {process.env.REACT_APP_SUPABASE_URL}</p>
       <div className="w-full content-center items-center justify-between flex-col">
         <div className="w-full content-center text-center">
             <button onClick={() => handleButtonPressed("food")} className={selectedCoupon=="food" ? "select_button bg-blue-300" : "select_button bg-white"}>Food</button>

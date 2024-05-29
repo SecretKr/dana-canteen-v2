@@ -56,3 +56,12 @@ tr:nth-child(odd) {
     width: 8rem;
     margin: 1rem;
 }
+
+.MuiStack-root {
+    padding-bottom: 8px;
+    width: 200px;
+}
+
+.MuiInputBase-root {
+    background-color: white;
+}
