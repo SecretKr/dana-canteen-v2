@@ -20,17 +20,19 @@ export default function Logs() {
     //const shift = searchParams.get("shift")
     if(date){
       const { data, error } = await supabase
-        .from(type)
-        .select("*")
-        .eq('date', date)
-      const sorted = data[0].data.sort((a,b) => Number(a.timestamp) - Number(b.timestamp))
-      console.log(sorted)
-      for(let i = 0;i < sorted.length;i++){
-        t.push({timestamp: new Date(Number(sorted[i].timestamp)).toLocaleString('en-us').replace(",",""), id: sorted[i].id})
-        ct.push([new Date(Number(sorted[i].timestamp)).toLocaleString('en-us').replace(",",""), sorted[i].id])
+      .from(type)
+      .select("*")
+      .eq('date', date)
+      if(data.length != 0){
+        const sorted = data[0].data.sort((a,b) => Number(a.timestamp) - Number(b.timestamp))
+        console.log(sorted)
+        for(let i = 0;i < sorted.length;i++){
+          t.push({timestamp: new Date(Number(sorted[i].timestamp)).toLocaleString('en-us').replace(",",""), id: sorted[i].id})
+          ct.push([new Date(Number(sorted[i].timestamp)).toLocaleString('en-us').replace(",",""), sorted[i].id])
+        }
+        setData(t)
+        setCsvData(ct)
       }
-      setData(t)
-      setCsvData(ct)
     }
   }
 

@@ -10,6 +10,17 @@ supabase stop
 CREATE OR REPLACE function append_food(date DATE, new_data JSONB) returns VOID as $$
   update food
   set data = data || new_data::jsonb
+  where food.date = append_food.date;
+
+  insert into food (date, data)
+  select date, array[new_data]::jsonb[]
+  ON CONFLICT (date) DO NOTHING;
+$$ language sql;
+
+
+CREATE OR REPLACE function append_food(date DATE, new_data JSONB) returns VOID as $$
+  update food
+  set data = data || new_data::jsonb
   where food.date = date;
 
   insert into food (date, data)
