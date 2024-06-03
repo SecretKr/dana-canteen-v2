@@ -209,8 +209,9 @@ export default function Summary() {
           Search
         </button>
       </div>
-      <div className="text-gray-600 bg-white rounded inline-block p-2 h-10 w-48 text-center">
+      <div className="text-gray-600 bg-white rounded inline-block h-10 w-48 text-center">
         <CsvDownloader
+          style={{"height": "2.5rem", "width": "12rem"}}
           filename={"Summary " + selectedCoupon + " " + startDate.toISOString().split("T")[0] + " - " + endDate.toISOString().split("T")[0]}
           extension=".csv"
           datas={csvData}
@@ -219,30 +220,30 @@ export default function Summary() {
       </div>
       <div className="flex mt-5 flex-col">
         <h1 className="font-semibold text-2xl">Dana Ladkrabang</h1>
-        <Table data={tbData} selectedCoupon={selectedCoupon}/>
+        <Table data={tbData} selectedCoupon={selectedCoupon} dep="1"/>
       </div>
       <div className="flex mt-5 flex-col">
         <h1 className="font-semibold text-2xl">GXO</h1>
-        <Table data={tbGxoData} selectedCoupon={selectedCoupon}/>
+        <Table data={tbGxoData} selectedCoupon={selectedCoupon} dep="2"/>
       </div>
       <div className="flex mt-5 flex-col">
         <h1 className="font-semibold text-2xl">Other</h1>
-        <Table data={tbOtherData} selectedCoupon={selectedCoupon}/>
+        <Table data={tbOtherData} selectedCoupon={selectedCoupon} dep="3"/>
       </div>
     </div>
   );
 }
 
-const Table = ({data, selectedCoupon}) => {
+const Table = ({data, selectedCoupon, dep}) => {
   const navigate = useNavigate()
   const pushToHistory = ({date, shift}) => {
-    navigate("/logs?date=" + date + "&type=" + selectedCoupon)
+    navigate("/logs?date=" + date + "&type=" + selectedCoupon + "&dep=" + dep)
   }
 
   return (
     <table className="w-full">
       <tbody>
-        <tr>
+        <tr className="summary-tr">
           <th></th>
           {data.map((item => {
             return(
@@ -252,8 +253,8 @@ const Table = ({data, selectedCoupon}) => {
             )
           }))}
         </tr>
-        <tr>
-          <td className="text-xs">Shift 1<br></br>10 - 14</td>
+        <tr className="summary-tr">
+          <td className="text-xs summary-td">Shift 1<br></br>10 - 14</td>
           {data.map((item => {
             return(
               <td key={"1"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "1"})}>
@@ -262,8 +263,8 @@ const Table = ({data, selectedCoupon}) => {
             )
           }))}
         </tr>
-        <tr>
-          <td className="text-xs">Shift 2<br></br>15 - 20</td>
+        <tr className="summary-tr">
+          <td className="text-xs summary-td">Shift 2<br></br>15 - 20</td>
           {data.map((item => {
             return(
               <td key={"2"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "2"})}>
@@ -272,8 +273,8 @@ const Table = ({data, selectedCoupon}) => {
             )
           }))}
         </tr>
-        <tr>
-          <td className="text-xs">Shift 3<br></br>22 - 1</td>
+        <tr className="summary-tr">
+          <td className="text-xs summary-td">Shift 3<br></br>22 - 1</td>
           {data.map((item => {
             return(
               <td key={"3"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "3"})}>
@@ -282,8 +283,8 @@ const Table = ({data, selectedCoupon}) => {
             )
           }))}
         </tr>
-        <tr>
-          <td className="text-xs">Shift 4<br></br>3 - 8</td>
+        <tr className="summary-tr">
+          <td className="text-xs summary-td">Shift 4<br></br>3 - 8</td>
           {data.map((item => {
             return(
               <td key={"4"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "4"})}>
@@ -292,8 +293,8 @@ const Table = ({data, selectedCoupon}) => {
             )
           }))}
         </tr>
-        <tr>
-          <td className="text-xs">Other</td>
+        <tr className="summary-tr">
+          <td className="text-xs summary-td">Other</td>
           {data.map((item => {
             return(
               <td key={"0"+item.date} onClick={() => pushToHistory({date:item.fullDate, shift: "0"})}>
