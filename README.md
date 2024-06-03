@@ -17,41 +17,24 @@ CREATE OR REPLACE function append_food(date DATE, new_data JSONB) returns VOID a
   ON CONFLICT (date) DO NOTHING;
 $$ language sql;
 
-
-CREATE OR REPLACE function append_food(date DATE, new_data JSONB) returns VOID as $$
-  update food
-  set data = data || new_data::jsonb
-  where food.date = date;
-
-  insert into food (date, data)
-  select date, array[new_data]::jsonb[]
-  where not exists (
-    select 1 from food where date = date
-  );
-$$ language sql;
-
 CREATE OR REPLACE function append_milk(date DATE, new_data JSONB) returns VOID as $$
   update milk
   set data = data || new_data::jsonb
-  where milk.date = date;
+  where milk.date = append_milk.date;
 
   insert into milk (date, data)
   select date, array[new_data]::jsonb[]
-  where not exists (
-    select 1 from milk where date = date
-  );
+  ON CONFLICT (date) DO NOTHING;
 $$ language sql;
 
 CREATE OR REPLACE function append_other(date DATE, new_data JSONB) returns VOID as $$
   update other
   set data = data || new_data::jsonb
-  where other.date = date;
+  where other.date = append_other.date;
 
   insert into other (date, data)
   select date, array[new_data]::jsonb[]
-  where not exists (
-    select 1 from other where date = date
-  );
+  ON CONFLICT (date) DO NOTHING;
 $$ language sql;
 ```
 
