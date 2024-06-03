@@ -180,7 +180,7 @@ export default function Summary() {
   }
 
   return (
-    <div className="relative px-[5%]">
+    <div className="relative px-[5%] pb-12">
       <div className="gap-4 flex flex-row content-start items-center mt-6">
         {/* <button onClick={test}>test</button> */}
         <p className="absolute right-2 top-2">DB-IP: {}</p>
