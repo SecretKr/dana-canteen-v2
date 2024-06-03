@@ -10,8 +10,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from "@mui/x-date-pickers";
 
 export default function Summary() {
-  const [startDate, setStartDate] = useState(dayjs())
-  const [endDate, setEndDate] = useState(dayjs())
+  const [startDate, setStartDate] = useState(dayjs(new Date().setUTCHours(0,0,0,0)))
+  const [endDate, setEndDate] = useState(dayjs(new Date().setUTCHours(0,0,0,0)))
   const [selectedCoupon, setSelectedCoupon] = useState("food")
   const [tbOtherData, setTbOtherData] = useState([])
   const [tbGxoData, setTbGxoData] = useState([])
@@ -136,7 +136,7 @@ export default function Summary() {
         csvL[22].push(ts_other[0])
         iDate.setDate(iDate.getDate() + 1)
       }
-      for(let d = iDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+      for(let d = iDate; d <= new Date(endDate); d.setDate(d.getDate() + 1)) {
         const idsp = d.toISOString().split("T")[0].split("-")
         table.push({date: idsp[1]+"-"+idsp[2], s0: 0, s1: 0, s2: 0, s3: 0, s4:0, fullDate: d.toISOString().split("T")[0]})
         table_gxo.push({date: idsp[1]+"-"+idsp[2], s0: 0, s1: 0, s2: 0, s3: 0, s4:0, fullDate: iDate.toISOString().split("T")[0]})
@@ -183,7 +183,7 @@ export default function Summary() {
     <div className="relative px-[5%] pb-12">
       <div className="gap-4 flex flex-row content-start items-center mt-6">
         {/* <button onClick={test}>test</button> */}
-        <p className="absolute right-2 top-2">DB-IP: {}</p>
+        <p className="absolute right-2 top-2">{}</p>
         <Link to="/"><button
           className="text-gray-600 bg-white rounded inline-block p-2 h-14 w-16 text-center"
         >

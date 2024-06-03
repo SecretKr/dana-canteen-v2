@@ -11,6 +11,7 @@ export default function Logs() {
   const [data, setData] = useState([])
   const [csvData, setCsvData] = useState([])
   const [userInfo, setUserInfo] = useState({})
+  const [department, setDepartment] = useState("")
 
   const getUsers = async () => {
     const users = {}
@@ -34,6 +35,7 @@ export default function Logs() {
     setDate(date)
     const type = searchParams.get("type")
     const dep = searchParams.get("dep")
+    setDepartment(dep)
     //const shift = searchParams.get("shift")
     if(date && type && dep){
       const { data, error } = await supabase
@@ -120,7 +122,8 @@ export default function Logs() {
           <p>Shift-4 (03.00-08.00) <span className="inline-block bg-purple-200 rounded h-4 w-4 translate-y-0.5"/></p>
         </div>
       </div>
-      <div className="flex mt-4">
+      <div className="flex mt-5 flex-col">
+        <h1 className="font-semibold text-2xl">{department == "1" && "Dana Ladkrabang"}{department == "2" && "GXO"}{department == "3" && "Other"}</h1>
         <Table data={data}/>
       </div>
     </div>

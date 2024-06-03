@@ -15,10 +15,10 @@ function Scan() {
         setId("")
         const today = new Date()
         const hours = today.getHours()
-        if(hours < 8) today.setDate(today.getDate() - 1)
         const timestamp = String(today.getTime())
+        if(hours < 8) today.setDate(today.getDate() - 1)
         const { data, error } = await supabase.rpc('append_' + selectedCoupon, {
-            date: today,
+            date: today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDate(),
             new_data: {
                 timestamp: timestamp,
                 id: id
