@@ -40,7 +40,7 @@ function Scan() {
   return (
     <div className="relative flex min-h-screen" onClick={() => inputRef.current.focus()}>
       <Link to="/summary"><button className="absolute top-4 left-4 bg-white rounded-md text-gray-600 p-2 w-24 h-10">Summary</button></Link>
-      <p className="absolute right-2 top-2">DB: {process.env.REACT_APP_SUPABASE_URL}</p>
+      <p className="absolute right-2 top-2">DB: {"http://" + window.location.hostname + ":54321"}</p>
       <div className="w-full content-center items-center justify-between flex-col">
         <div className="w-full content-center text-center">
             <button onClick={() => handleButtonPressed("food")} className={selectedCoupon=="food" ? "select_button bg-blue-300" : "select_button bg-white"}>Food</button>
