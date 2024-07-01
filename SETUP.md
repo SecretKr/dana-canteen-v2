@@ -1,0 +1,3 @@
+- Run docker desktop
+- Open files app
+- Right click and run "run.sh"
