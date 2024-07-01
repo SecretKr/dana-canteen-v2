@@ -36,6 +36,16 @@ CREATE OR REPLACE function append_other(date DATE, new_data JSONB) returns VOID 
   select date, array[new_data]::jsonb[]
   ON CONFLICT (date) DO NOTHING;
 $$ language sql;
+
+CREATE OR REPLACE function append_general(date DATE, new_data JSONB) returns VOID as $$
+  update general
+  set data = data || new_data::jsonb
+  where general.date = append_general.date;
+
+  insert into general (date, data)
+  select date, array[new_data]::jsonb[]
+  ON CONFLICT (date) DO NOTHING;
+$$ language sql;
 ```
 
 # Getting Started with Create React App

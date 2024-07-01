@@ -3,33 +3,29 @@ import { Link } from "react-router-dom"
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../supabaseClient"
 
-function Scan() {
+function GeneralRecord() {
   const inputRef = useRef(null);
   const [id, setId] = useState("")
   const [confirmation, setConfirmation] = useState("")
-  const [selectedCoupon, setSelectedCoupon] = useState("food")
 
   const submit = async() => {
     if(id != ""){
-        console.log(selectedCoupon, id)
         setId("")
         const today = new Date()
-        const hours = today.getHours()
         const timestamp = String(today.getTime())
-        if(hours < 8) today.setDate(today.getDate() - 1)
-        const { data, error } = await supabase.rpc('append_' + selectedCoupon, {
+        const { data, error } = await supabase.rpc('append_general', {
             date: today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDate(),
             new_data: {
                 timestamp: timestamp,
                 id: id
             }
           });
-        if(error){
-          console.log(error.details)
-        }
-        else{
-          setConfirmation(id)
-        }
+          if(error){
+            console.log(error.details)
+          }
+          else{
+            setConfirmation(id)
+          }
     }
   }
 
@@ -38,21 +34,14 @@ function Scan() {
     setId(input)
   }
 
-  const handleButtonPressed = (option) => {
-    setSelectedCoupon(option)
-    inputRef.current.focus()
-  }
-
   return (
     <div className="relative flex min-h-screen" onClick={() => inputRef.current.focus()}>
       <Link to="/summary"><button className="absolute top-4 left-4 bg-white rounded-md text-gray-600 p-2 w-24 h-10">Summary</button></Link>
-      <Link to="/general"><button className="absolute top-4 left-32 bg-white rounded-md text-gray-600 p-2 w-24 h-10">General</button></Link>
+      <Link to="/"><button className="absolute top-4 left-32 bg-white rounded-md text-gray-600 p-2 w-24 h-10">Food</button></Link>
       <p className="absolute right-2 top-2">DB: {"http://" + window.location.hostname + ":54321"}</p>
       <div className="w-full content-center items-center justify-between flex-col">
         <div className="w-full content-center text-center">
-            <button onClick={() => handleButtonPressed("food")} className={selectedCoupon=="food" ? "select_button bg-blue-300" : "select_button bg-white"}>Food</button>
-            <button onClick={() => handleButtonPressed("milk")} className={selectedCoupon=="milk" ? "select_button bg-blue-300" : "select_button bg-white"}>Milk</button>
-            <button onClick={() => handleButtonPressed("other")} className={selectedCoupon=="other" ? "select_button bg-blue-300" : "select_button bg-white"}>Other</button>
+            <h className="font-bold text-4xl text-gray-600">General Record</h>
         </div>
         <div className="text-center mt-10">
           <input className="p-2 w-96 mr-4 rounded-md outline-none"
@@ -74,4 +63,4 @@ function Scan() {
   );
 }
 
-export default Scan;
+export default GeneralRecord;
